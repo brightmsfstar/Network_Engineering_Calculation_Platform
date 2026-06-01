@@ -1,8 +1,9 @@
-const CACHE_NAME = 'net-platform-phase1-v1';
+const CACHE_NAME = 'net-calc-platform-phase1-v2';
 const APP_ASSETS = [
   './',
   './index.html',
   './manifest.json',
+  './service-worker.js',
   './icons/icon-72.png',
   './icons/icon-96.png',
   './icons/icon-128.png',
@@ -14,18 +15,14 @@ const APP_ASSETS = [
 ];
 
 self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(APP_ASSETS))
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_ASSETS)));
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key);
-      }))
+      Promise.all(keys.map(key => key !== CACHE_NAME ? caches.delete(key) : null))
     )
   );
   self.clients.claim();
